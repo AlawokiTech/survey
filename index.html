@@ -950,7 +950,7 @@
                         <div class="radio-option"><input type="radio" name="q34" value="Very unreliable (often no connection)" id="q34_4"><label for="q34_4">Very unreliable (often no connection)</label></div>
                     </div>
                     <div class="error-message" id="error-q34">Please select an option</div>
-        </div>
+                </div>
 
                 <div class="question">
                     <label class="question-label">35. How much do you spend monthly on data?<span class="required">*</span></label>
@@ -1084,7 +1084,8 @@
         // ============================================
         // GOOGLE SHEETS CONFIGURATION
         // ============================================
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjMXcLk74zcyxCOUBc87kQo9lu1cOeXbRwUdFNyBsapXMBEiKyieoEsIUVo_heexmU/exec';
+        // Deployed Google Apps Script web app URL - responses are sent here
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo1tASclZwGlK3DoBoy1d-ozCnLIXIlpnyriy_I70ZItvKgJfYLY2waQS4IISqYThA/exec';
 
         // ============================================
         // SURVEY STATE
@@ -1348,26 +1349,67 @@
         }
 
         // ============================================
-        // GOOGLE SHEETS SUBMISSION
+        // GOOGLE SHEETS SUBMISSION (IMPROVED)
         // ============================================
         async function submitToGoogleSheets(formData) {
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('REPLACE')) {
+                console.log('Google Sheets URL not configured');
+                return { success: false, error: 'URL not configured' };
+            }
+
             try {
+                console.log('Submitting to Google Sheets:', formData);
+                
+                // Add timestamp and ID
+                const dataToSend = {
+                    ...formData,
+                    submittedAt: new Date().toISOString(),
+                    id: 'RESP-' + Date.now()
+                };
+                
+                // Convert arrays to strings for Google Sheets
+                Object.keys(dataToSend).forEach(key => {
+                    if (Array.isArray(dataToSend[key])) {
+                        dataToSend[key] = dataToSend[key].join(', ');
+                    }
+                });
+                
+                // Submit with timeout
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000);
+                
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors',
+                    mode: 'cors',
+                    signal: controller.signal,
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify(dataToSend)
                 });
-
-                // Note: 'no-cors' mode doesn't return response body
-                // We assume success if no error is thrown
-                return { success: true };
-
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Google Sheets response:', result);
+                
+                if (result.success) {
+                    return { success: true };
+                } else {
+                    return { success: false, error: result.error };
+                }
+                
             } catch (error) {
-                console.error('Error submitting to Google Sheets:', error);
-                return { success: false, error: error.message };
+                console.error('Google Sheets submission error:', error);
+                return { 
+                    success: false, 
+                    error: error.message,
+                    details: 'Make sure Google Apps Script is deployed correctly'
+                };
             }
         }
 
@@ -1399,26 +1441,81 @@
             let responses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
             responses.push({ ...surveyData, ...formData });
             localStorage.setItem('surveyResponses', JSON.stringify(responses));
+            console.log('✅ Saved to localStorage');
 
             // Submit to Google Sheets
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'REPLACE_WITH_YOUR_DEPLOYED_APPS_SCRIPT_URL') {
                 const result = await submitToGoogleSheets(formData);
 
-                if (!result.success) {
-                    console.log('Note: Response saved locally. Check your internet connection or Google Sheets configuration.');
+                if (result.success) {
+                    console.log('✅ Successfully submitted to Google Sheets');
+                    // Show success message with Google Sheets link
+                    showThankYouWithSheetsLink();
+                } else {
+                    console.log('⚠️ Google Sheets submission failed:', result.error);
+                    // Show warning but still thank user
+                    showThankYouWithWarning(result.error);
                 }
             } else {
                 console.log('Note: Google Sheets URL not configured. Response saved locally only.');
+                showThankYouMessage();
             }
 
             // Reset button
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
+        }
 
-            // Show thank you message
+        // ============================================
+        // THANK YOU MESSAGE FUNCTIONS
+        // ============================================
+        function showThankYouMessage() {
             document.querySelector('.content').innerHTML = '';
             document.getElementById('thankYou').classList.add('show');
             document.querySelector('.progress-container').style.display = 'none';
+        }
+
+        function showThankYouWithSheetsLink() {
+            document.querySelector('.content').innerHTML = '';
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const thankYouHTML = `
+                <div class="thank-you show">
+                    <div class="emoji">🎉</div>
+                    <h2>Thank you so much!</h2>
+                    <p>✅ Your response has been successfully submitted to Google Sheets.</p>
+                    <p>To view <strong>ALL responses</strong> from everyone, visit:</p>
+                    <a href="https://docs.google.com/spreadsheets/d/1TzF7U4o70HfABCO8pmPAaCpCQDvp4p3MjfZgEKFqF60/edit" 
+                       target="_blank" class="btn btn-primary" style="margin: 15px 0;">
+                       📊 View All Responses in Google Sheets
+                    </a>
+                    <p>Thank you for helping shape solutions for Nigeria! 🇳🇬</p>
+                    <p><small>(Your response has also been saved locally to this device)</small></p>
+                </div>
+            `;
+            
+            document.querySelector('.content').innerHTML = thankYouHTML;
+        }
+
+        function showThankYouWithWarning(error) {
+            document.querySelector('.content').innerHTML = '';
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const thankYouHTML = `
+                <div class="thank-you show">
+                    <div class="emoji">🙏</div>
+                    <h2>Thank you so much!</h2>
+                    <p>✅ Your response has been saved locally to this device.</p>
+                    <p>⚠️ <strong>Note:</strong> There was an issue submitting to Google Sheets: ${error}</p>
+                    <p>You can still view responses from this device in the admin panel.</p>
+                    <button class="btn btn-secondary" onclick="goToSurvey()" style="margin: 10px 0;">
+                        Back to Survey
+                    </button>
+                    <p>Thank you for your participation! 🇳🇬</p>
+                </div>
+            `;
+            
+            document.querySelector('.content').innerHTML = thankYouHTML;
         }
 
         // ============================================
