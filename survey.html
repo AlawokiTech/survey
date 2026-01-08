@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nigerian Problem Discovery Survey</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #008751 0%, #00a861 100%);
+            min-height: 100vh;
+            padding: 20px 10px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: #008751;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 14px;
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        .progress-container {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #008751;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+        }
+
+        .content {
+            padding: 30px 20px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 22px;
+            color: #008751;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .question {
+            margin-bottom: 30px;
+        }
+
+        .question-label {
+            display: block;
+            font-size: 15px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: #333;
+        }
+
+        .required {
+            color: #d93025;
+            margin-left: 4px;
+        }
+
+        .optional {
+            color: #888;
+            font-size: 13px;
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
+        .hint {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #008751;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .radio-group,
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .radio-option,
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover,
+        .checkbox-option:hover {
+            border-color: #008751;
+            background: #f8fbf9;
+        }
+
+        .radio-option.selected,
+        .checkbox-option.selected {
+            border-color: #008751;
+            background: #f0f8f4;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #008751;
+        }
+
+        .radio-option label,
+        .checkbox-option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 15px;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: #008751;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #00693f;
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            color: #d93025;
+            font-size: 13px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .thank-you {
+            text-align: center;
+            padding: 60px 20px;
+            display: none;
+        }
+
+        .thank-you.show {
+            display: block;
+        }
+
+        .thank-you h2 {
+            color: #008751;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .thank-you p {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .thank-you .emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        /* Admin Panel Styles */
+        .admin-panel {
+            display: none;
+        }
+
+        .admin-panel.show {
+            display: block;
+        }
+
+        .admin-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px;
+        }
+
+        .admin-header h2 {
+            margin-bottom: 10px;
+        }
+
+        .admin-header p {
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .admin-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .stat-box {
+            background: #333;
+            padding: 15px 20px;
+            border-radius: 6px;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .stat-box .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #008751;
+        }
+
+        .stat-box .label {
+            font-size: 13px;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        .admin-controls {
+            padding: 20px;
+            background: #f5f5f5;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .admin-content {
+            padding: 20px;
+        }
+
+        .response-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .response-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .response-id {
+            font-weight: 600;
+            color: #008751;
+        }
+
+        .response-date {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .response-data {
+            font-size: 14px;
+        }
+
+        .response-data strong {
+            color: #333;
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .response-data p {
+            color: #666;
+            margin-left: 10px;
+        }
+
+        .btn-danger {
+            background: #d93025;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .no-responses {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .btn-sheets {
+            background: #0f9d58;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .btn-sheets:hover {
+            background: #0b8043;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px 5px;
+            }
+
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .content {
+                padding: 20px 15px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .btn {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
+
+            .admin-stats {
+                flex-direction: column;
+            }
+
+            .stat-box {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="surveyContainer">
+        <div class="header">
+            <h1>Nigerian Problem Discovery Survey</h1>
+            <p>Hello! I'm conducting research to understand the everyday challenges Nigerians face, with the goal of building technology solutions that can genuinely help.</p>
+            <p>This takes about 5-10 minutes. All responses are anonymous and will only be used for research purposes.</p>
+            <p>Thank you for your time! 🙏</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Section 1 of 10</div>
+        </div>
+
+        <div class="content">
+            <!-- Section 1: About You -->
+            <div class="section active" data-section="1">
+                <h2 class="section-title">About You</h2>
+                <p class="section-description">Let's start with some basic information</p>
+
+                <div class="question">
+                    <label class="question-label">1. What is your age range?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q1" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q1" value="18-24" id="q1_1"><label for="q1_1">18-24</label></div>
+                        <div class="radio-option"><input type="radio" name="q1" value="25-34" id="q1_2"><label for="q1_2">25-34</label></div>
+                        <div class="radio-option"><input type="radio" name="q1" value="35-44" id="q1_3"><label for="q1_3">35-44</label></div>
+                        <div class="radio-option"><input type="radio" name="q1" value="45-54" id="q1_4"><label for="q1_4">45-54</label></div>
+                        <div class="radio-option"><input type="radio" name="q1" value="55+" id="q1_5"><label for="q1_5">55+</label></div>
+                    </div>
+                    <div class="error-message" id="error-q1">Please select your age range</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">2. What is your gender?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q2" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q2" value="Male" id="q2_1"><label for="q2_1">Male</label></div>
+                        <div class="radio-option"><input type="radio" name="q2" value="Female" id="q2_2"><label for="q2_2">Female</label></div>
+                        <div class="radio-option"><input type="radio" name="q2" value="Prefer not to say" id="q2_3"><label for="q2_3">Prefer not to say</label></div>
+                    </div>
+                    <div class="error-message" id="error-q2">Please select your gender</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q3">3. Which state do you live in?<span class="required">*</span></label>
+                    <input type="text" id="q3" name="q3" data-required="true" placeholder="e.g., Lagos, Abuja, Rivers">
+                    <div class="error-message" id="error-q3">Please enter your state</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">4. What type of area do you live in?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q4" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q4" value="Urban (city center)" id="q4_1"><label for="q4_1">Urban (city center)</label></div>
+                        <div class="radio-option"><input type="radio" name="q4" value="Semi-urban (town/suburb)" id="q4_2"><label for="q4_2">Semi-urban (town/suburb)</label></div>
+                        <div class="radio-option"><input type="radio" name="q4" value="Rural (village)" id="q4_3"><label for="q4_3">Rural (village)</label></div>
+                    </div>
+                    <div class="error-message" id="error-q4">Please select your area type</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">5. What is your employment status?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q5" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q5" value="Employed (full-time)" id="q5_1"><label for="q5_1">Employed (full-time)</label></div>
+                        <div class="radio-option"><input type="radio" name="q5" value="Employed (part-time)" id="q5_2"><label for="q5_2">Employed (part-time)</label></div>
+                        <div class="radio-option"><input type="radio" name="q5" value="Self-employed / Business owner" id="q5_3"><label for="q5_3">Self-employed / Business owner</label></div>
+                        <div class="radio-option"><input type="radio" name="q5" value="Student" id="q5_4"><label for="q5_4">Student</label></div>
+                        <div class="radio-option"><input type="radio" name="q5" value="Unemployed / Job seeking" id="q5_5"><label for="q5_5">Unemployed / Job seeking</label></div>
+                        <div class="radio-option"><input type="radio" name="q5" value="Retired" id="q5_6"><label for="q5_6">Retired</label></div>
+                    </div>
+                    <div class="error-message" id="error-q5">Please select your employment status</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q6">6. What is your occupation/profession?<span class="required">*</span></label>
+                    <input type="text" id="q6" name="q6" data-required="true" placeholder="e.g., Teacher, Software Developer, Trader">
+                    <div class="error-message" id="error-q6">Please enter your occupation</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">7. What is your approximate monthly income range?<span class="optional">(Optional)</span></label>
+                    <div class="radio-group" data-question="q7" data-required="false">
+                        <div class="radio-option"><input type="radio" name="q7" value="Below ₦50,000" id="q7_1"><label for="q7_1">Below ₦50,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="₦50,000 - ₦100,000" id="q7_2"><label for="q7_2">₦50,000 - ₦100,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="₦100,000 - ₦250,000" id="q7_3"><label for="q7_3">₦100,000 - ₦250,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="₦250,000 - ₦500,000" id="q7_4"><label for="q7_4">₦250,000 - ₦500,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="₦500,000 - ₦1,000,000" id="q7_5"><label for="q7_5">₦500,000 - ₦1,000,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="Above ₦1,000,000" id="q7_6"><label for="q7_6">Above ₦1,000,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q7" value="Prefer not to say" id="q7_7"><label for="q7_7">Prefer not to say</label></div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()" style="visibility: hidden;">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 2: Your Daily Frustrations -->
+            <div class="section" data-section="2">
+                <h2 class="section-title">Your Daily Frustrations</h2>
+                <p class="section-description">Tell us about the challenges you face every day</p>
+
+                <div class="question">
+                    <label class="question-label" for="q8">8. What are the TOP 3 things that frustrate you most in your daily life in Nigeria?<span class="required">*</span>
+                        <span class="hint">Hint: Be specific, e.g., "Finding reliable artisans", "Hospital waiting times", "Tracking my business expenses"</span>
+                    </label>
+                    <textarea id="q8" name="q8" data-required="true" placeholder="Please list your top 3 frustrations..."></textarea>
+                    <div class="error-message" id="error-q8">Please answer this question</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q9">9. What task or activity takes too much of your time that you wish was easier/faster?<span class="required">*</span></label>
+                    <textarea id="q9" name="q9" data-required="true" placeholder="Describe the task..."></textarea>
+                    <div class="error-message" id="error-q9">Please answer this question</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q10">10. What do you wish you could do from your phone but currently can't?<span class="required">*</span></label>
+                    <textarea id="q10" name="q10" data-required="true" placeholder="Describe what you'd like to do..."></textarea>
+                    <div class="error-message" id="error-q10">Please answer this question</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q11">11. Have you ever thought "why isn't there an app for this?" If yes, what was it for?<span class="required">*</span></label>
+                    <textarea id="q11" name="q11" data-required="true" placeholder="Describe the situation..."></textarea>
+                    <div class="error-message" id="error-q11">Please answer this question</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 3: Healthcare & Wellness -->
+            <div class="section" data-section="3">
+                <h2 class="section-title">Healthcare & Wellness</h2>
+                <p class="section-description">Your experiences with healthcare in Nigeria</p>
+
+                <div class="question">
+                    <label class="question-label">12. How do you currently find doctors or hospitals when you need medical care?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q12" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q12" value="Ask family/friends for recommendations" id="q12_1"><label for="q12_1">Ask family/friends for recommendations</label></div>
+                        <div class="radio-option"><input type="radio" name="q12" value="Go to the nearest hospital/clinic" id="q12_2"><label for="q12_2">Go to the nearest hospital/clinic</label></div>
+                        <div class="radio-option"><input type="radio" name="q12" value="Search online" id="q12_3"><label for="q12_3">Search online</label></div>
+                        <div class="radio-option"><input type="radio" name="q12" value="Already have a regular doctor" id="q12_4"><label for="q12_4">Already have a regular doctor</label></div>
+                        <div class="radio-option"><input type="radio" name="q12" value="Other" id="q12_5"><label for="q12_5">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q12">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">13. What is your biggest challenge when seeking healthcare?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q13" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Finding qualified/trustworthy doctors" id="q13_1"><label for="q13_1">Finding qualified/trustworthy doctors</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Long waiting times" id="q13_2"><label for="q13_2">Long waiting times</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="High costs / affordability" id="q13_3"><label for="q13_3">High costs / affordability</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Distance to good hospitals" id="q13_4"><label for="q13_4">Distance to good hospitals</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Getting accurate diagnosis" id="q13_5"><label for="q13_5">Getting accurate diagnosis</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Finding specialists" id="q13_6"><label for="q13_6">Finding specialists</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Keeping track of medical records" id="q13_7"><label for="q13_7">Keeping track of medical records</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Verifying if medication is genuine" id="q13_8"><label for="q13_8">Verifying if medication is genuine</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q13" value="Other" id="q13_9"><label for="q13_9">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q13">Please select at least one option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">14. How do you keep track of your medical history and records?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q14" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q14" value="I keep physical papers/folders" id="q14_1"><label for="q14_1">I keep physical papers/folders</label></div>
+                        <div class="radio-option"><input type="radio" name="q14" value="I don't really track them" id="q14_2"><label for="q14_2">I don't really track them</label></div>
+                        <div class="radio-option"><input type="radio" name="q14" value="I rely on the hospital to keep records" id="q14_3"><label for="q14_3">I rely on the hospital to keep records</label></div>
+                        <div class="radio-option"><input type="radio" name="q14" value="I use a phone app" id="q14_4"><label for="q14_4">I use a phone app</label></div>
+                        <div class="radio-option"><input type="radio" name="q14" value="Other" id="q14_5"><label for="q14_5">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q14">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">15. Would you use a telemedicine service (video call with doctor)?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q15" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q15" value="Yes, definitely" id="q15_1"><label for="q15_1">Yes, definitely</label></div>
+                        <div class="radio-option"><input type="radio" name="q15" value="Yes, for minor issues only" id="q15_2"><label for="q15_2">Yes, for minor issues only</label></div>
+                        <div class="radio-option"><input type="radio" name="q15" value="Maybe, if affordable" id="q15_3"><label for="q15_3">Maybe, if affordable</label></div>
+                        <div class="radio-option"><input type="radio" name="q15" value="No, I prefer in-person" id="q15_4"><label for="q15_4">No, I prefer in-person</label></div>
+                        <div class="radio-option"><input type="radio" name="q15" value="I've already used one" id="q15_5"><label for="q15_5">I've already used one</label></div>
+                    </div>
+                    <div class="error-message" id="error-q15">Please select an option</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 4: Money & Financial Management -->
+            <div class="section" data-section="4">
+                <h2 class="section-title">Money & Financial Management</h2>
+                <p class="section-description">How you manage your finances</p>
+
+                <div class="question">
+                    <label class="question-label">16. What is your biggest financial challenge?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q16" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Tracking expenses / knowing where money goes" id="q16_1"><label for="q16_1">Tracking expenses / knowing where money goes</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Saving money consistently" id="q16_2"><label for="q16_2">Saving money consistently</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Managing business finances separately from personal" id="q16_3"><label for="q16_3">Managing business finances separately from personal</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Sending/receiving money to/from family" id="q16_4"><label for="q16_4">Sending/receiving money to/from family</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Paying bills on time" id="q16_5"><label for="q16_5">Paying bills on time</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Getting access to loans/credit" id="q16_6"><label for="q16_6">Getting access to loans/credit</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Dealing with fraudsters / scams" id="q16_7"><label for="q16_7">Dealing with fraudsters / scams</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q16" value="Other" id="q16_8"><label for="q16_8">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q16">Please select at least one option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">17. How do you currently track your income and expenses?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q17" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q17" value="I don't track them" id="q17_1"><label for="q17_1">I don't track them</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Mental calculation" id="q17_2"><label for="q17_2">Mental calculation</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Write in notebook" id="q17_3"><label for="q17_3">Write in notebook</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Use phone notes" id="q17_4"><label for="q17_4">Use phone notes</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Use a spreadsheet (Excel/Google Sheets)" id="q17_5"><label for="q17_5">Use a spreadsheet (Excel/Google Sheets)</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Use an app" id="q17_6"><label for="q17_6">Use an app</label></div>
+                        <div class="radio-option"><input type="radio" name="q17" value="Other" id="q17_7"><label for="q17_7">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q17">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">18. Do you participate in any ajo/esusu/contribution scheme?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q18" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q18" value="Yes, currently active" id="q18_1"><label for="q18_1">Yes, currently active</label></div>
+                        <div class="radio-option"><input type="radio" name="q18" value="Yes, in the past" id="q18_2"><label for="q18_2">Yes, in the past</label></div>
+                        <div class="radio-option"><input type="radio" name="q18" value="No, but interested" id="q18_3"><label for="q18_3">No, but interested</label></div>
+                        <div class="radio-option"><input type="radio" name="q18" value="No, not interested" id="q18_4"><label for="q18_4">No, not interested</label></div>
+                    </div>
+                    <div class="error-message" id="error-q18">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">19. If yes to ajo/esusu, what challenges do you face?<span class="optional">(Optional)</span></label>
+                    <div class="checkbox-group" data-question="q19" data-required="false">
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="Tracking who has paid" id="q19_1"><label for="q19_1">Tracking who has paid</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="Trust issues with members" id="q19_2"><label for="q19_2">Trust issues with members</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="People defaulting on payments" id="q19_3"><label for="q19_3">People defaulting on payments</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="Managing rotation schedule" id="q19_4"><label for="q19_4">Managing rotation schedule</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="Calculating amounts" id="q19_5"><label for="q19_5">Calculating amounts</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="No challenges" id="q19_6"><label for="q19_6">No challenges</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q19" value="N/A - I don't participate" id="q19_7"><label for="q19_7">N/A - I don't participate</label></div>
+                    </div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">20. How much would you pay monthly for an app that perfectly manages your finances and budgeting?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q20" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q20" value="Nothing - must be free" id="q20_1"><label for="q20_1">Nothing - must be free</label></div>
+                        <div class="radio-option"><input type="radio" name="q20" value="₦200 - ₦500" id="q20_2"><label for="q20_2">₦200 - ₦500</label></div>
+                        <div class="radio-option"><input type="radio" name="q20" value="₦500 - ₦1,000" id="q20_3"><label for="q20_3">₦500 - ₦1,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q20" value="₦1,000 - ₦2,000" id="q20_4"><label for="q20_4">₦1,000 - ₦2,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q20" value="₦2,000+" id="q20_5"><label for="q20_5">₦2,000+</label></div>
+                        <div class="radio-option"><input type="radio" name="q20" value="Depends on features" id="q20_6"><label for="q20_6">Depends on features</label></div>
+                    </div>
+                    <div class="error-message" id="error-q20">Please select an option</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 5: Services & Artisans -->
+            <div class="section" data-section="5">
+                <h2 class="section-title">Services & Artisans</h2>
+                <p class="section-description">Finding and working with service providers</p>
+
+                <div class="question">
+                    <label class="question-label" for="q21">21. If you run a business or side hustle, what is your biggest operational challenge?<span class="optional">(Optional)</span></label>
+                    <textarea id="q21" name="q21" data-required="false" placeholder="Describe your challenge..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">22. How do you currently find service providers (plumbers, electricians, mechanics, tailors, etc.)?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q22" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q22" value="Ask neighbors/friends" id="q22_1"><label for="q22_1">Ask neighbors/friends</label></div>
+                        <div class="radio-option"><input type="radio" name="q22" value="Go to known market areas" id="q22_2"><label for="q22_2">Go to known market areas</label></div>
+                        <div class="radio-option"><input type="radio" name="q22" value="Search online/social media" id="q22_3"><label for="q22_3">Search online/social media</label></div>
+                        <div class="radio-option"><input type="radio" name="q22" value="Use saved contacts from past work" id="q22_4"><label for="q22_4">Use saved contacts from past work</label></div>
+                        <div class="radio-option"><input type="radio" name="q22" value="Other" id="q22_5"><label for="q22_5">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q22">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">23. What problems have you had with artisans/service providers?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q23" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Hard to find reliable ones" id="q23_1"><label for="q23_1">Hard to find reliable ones</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Poor quality work" id="q23_2"><label for="q23_2">Poor quality work</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Overcharging / price disputes" id="q23_3"><label for="q23_3">Overcharging / price disputes</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Not showing up as promised" id="q23_4"><label for="q23_4">Not showing up as promised</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="No way to verify their skills/reputation" id="q23_5"><label for="q23_5">No way to verify their skills/reputation</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Difficulty getting them to return for fixes" id="q23_6"><label for="q23_6">Difficulty getting them to return for fixes</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="None - generally satisfied" id="q23_7"><label for="q23_7">None - generally satisfied</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q23" value="Other" id="q23_8"><label for="q23_8">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q23">Please select at least one option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">24. If there was a verified artisan/service provider app (with ratings, reviews, fixed pricing), would you use it?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q24" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q24" value="Definitely yes" id="q24_1"><label for="q24_1">Definitely yes</label></div>
+                        <div class="radio-option"><input type="radio" name="q24" value="Probably yes" id="q24_2"><label for="q24_2">Probably yes</label></div>
+                        <div class="radio-option"><input type="radio" name="q24" value="Maybe" id="q24_3"><label for="q24_3">Maybe</label></div>
+                        <div class="radio-option"><input type="radio" name="q24" value="Probably not" id="q24_4"><label for="q24_4">Probably not</label></div>
+                        <div class="radio-option"><input type="radio" name="q24" value="Definitely not" id="q24_5"><label for="q24_5">Definitely not</label></div>
+                    </div>
+                    <div class="error-message" id="error-q24">Please select an option</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 6: Education -->
+            <div class="section" data-section="6">
+                <h2 class="section-title">Education</h2>
+                <p class="section-description">Education-related challenges</p>
+
+                <div class="question">
+                    <label class="question-label">25. Are you currently studying or do you have children in school?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q25" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q25" value="Yes, I'm a student" id="q25_1"><label for="q25_1">Yes, I'm a student</label></div>
+                        <div class="radio-option"><input type="radio" name="q25" value="Yes, I have children in school" id="q25_2"><label for="q25_2">Yes, I have children in school</label></div>
+                        <div class="radio-option"><input type="radio" name="q25" value="Both" id="q25_3"><label for="q25_3">Both</label></div>
+                        <div class="radio-option"><input type="radio" name="q25" value="No" id="q25_4"><label for="q25_4">No</label></div>
+                    </div>
+                    <div class="error-message" id="error-q25">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">26. What are the biggest education-related challenges you face?<span class="optional">(Optional)</span></label>
+                    <div class="checkbox-group" data-question="q26" data-required="false">
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Cost of education / school fees" id="q26_1"><label for="q26_1">Cost of education / school fees</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Finding good schools" id="q26_2"><label for="q26_2">Finding good schools</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Communication with teachers/school" id="q26_3"><label for="q26_3">Communication with teachers/school</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Tracking children's progress" id="q26_4"><label for="q26_4">Tracking children's progress</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Finding tutors / extra lessons" id="q26_5"><label for="q26_5">Finding tutors / extra lessons</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Access to study materials" id="q26_6"><label for="q26_6">Access to study materials</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Exam preparation (JAMB, WAEC, etc.)" id="q26_7"><label for="q26_7">Exam preparation (JAMB, WAEC, etc.)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="N/A" id="q26_8"><label for="q26_8">N/A</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q26" value="Other" id="q26_9"><label for="q26_9">Other</label></div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 7: Government Services -->
+            <div class="section" data-section="7">
+                <h2 class="section-title">Government Services</h2>
+                <p class="section-description">Dealing with government agencies</p>
+
+                <div class="question">
+                    <label class="question-label">27. Which government services have you found most frustrating to access?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q27" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="NIN registration/correction" id="q27_1"><label for="q27_1">NIN registration/correction</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Passport application/renewal" id="q27_2"><label for="q27_2">Passport application/renewal</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Driver's license" id="q27_3"><label for="q27_3">Driver's license</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Vehicle registration" id="q27_4"><label for="q27_4">Vehicle registration</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Birth certificate" id="q27_5"><label for="q27_5">Birth certificate</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Land/property documents" id="q27_6"><label for="q27_6">Land/property documents</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Business registration (CAC)" id="q27_7"><label for="q27_7">Business registration (CAC)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Tax filing" id="q27_8"><label for="q27_8">Tax filing</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="None - generally okay" id="q27_9"><label for="q27_9">None - generally okay</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q27" value="Other" id="q27_10"><label for="q27_10">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q27">Please select at least one option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q28">28. What specifically makes these government services frustrating?<span class="required">*</span></label>
+                    <textarea id="q28" name="q28" data-required="true" placeholder="Describe the specific issues..."></textarea>
+                    <div class="error-message" id="error-q28">Please answer this question</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 8: Infrastructure & Daily Life -->
+            <div class="section" data-section="8">
+                <h2 class="section-title">Infrastructure & Daily Life</h2>
+                <p class="section-description">Power, fuel, transportation</p>
+
+                <div class="question">
+                    <label class="question-label">29. How often do you experience power outages (NEPA/DISCO)?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q29" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q29" value="Multiple times daily" id="q29_1"><label for="q29_1">Multiple times daily</label></div>
+                        <div class="radio-option"><input type="radio" name="q29" value="Once daily" id="q29_2"><label for="q29_2">Once daily</label></div>
+                        <div class="radio-option"><input type="radio" name="q29" value="Few times a week" id="q29_3"><label for="q29_3">Few times a week</label></div>
+                        <div class="radio-option"><input type="radio" name="q29" value="Rarely" id="q29_4"><label for="q29_4">Rarely</label></div>
+                        <div class="radio-option"><input type="radio" name="q29" value="Never (I have reliable power)" id="q29_5"><label for="q29_5">Never (I have reliable power)</label></div>
+                    </div>
+                    <div class="error-message" id="error-q29">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">30. Would an app that tracks power outage schedules and alerts you be useful?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q30" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q30" value="Very useful" id="q30_1"><label for="q30_1">Very useful</label></div>
+                        <div class="radio-option"><input type="radio" name="q30" value="Somewhat useful" id="q30_2"><label for="q30_2">Somewhat useful</label></div>
+                        <div class="radio-option"><input type="radio" name="q30" value="Not very useful" id="q30_3"><label for="q30_3">Not very useful</label></div>
+                        <div class="radio-option"><input type="radio" name="q30" value="Not useful at all" id="q30_4"><label for="q30_4">Not useful at all</label></div>
+                    </div>
+                    <div class="error-message" id="error-q30">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">31. How do you currently find information about fuel availability and prices?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q31" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q31" value="Drive around to check" id="q31_1"><label for="q31_1">Drive around to check</label></div>
+                        <div class="radio-option"><input type="radio" name="q31" value="Call friends/family" id="q31_2"><label for="q31_2">Call friends/family</label></div>
+                        <div class="radio-option"><input type="radio" name="q31" value="WhatsApp groups" id="q31_3"><label for="q31_3">WhatsApp groups</label></div>
+                        <div class="radio-option"><input type="radio" name="q31" value="Social media" id="q31_4"><label for="q31_4">Social media</label></div>
+                        <div class="radio-option"><input type="radio" name="q31" value="I don't - just go to nearest station" id="q31_5"><label for="q31_5">I don't - just go to nearest station</label></div>
+                        <div class="radio-option"><input type="radio" name="q31" value="Other" id="q31_6"><label for="q31_6">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q31">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">32. What transportation challenges do you face?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q32" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="Finding reliable/safe rides" id="q32_1"><label for="q32_1">Finding reliable/safe rides</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="High transportation costs" id="q32_2"><label for="q32_2">High transportation costs</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="Traffic and long commute times" id="q32_3"><label for="q32_3">Traffic and long commute times</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="No nearby public transport" id="q32_4"><label for="q32_4">No nearby public transport</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="Safety concerns (especially at night)" id="q32_5"><label for="q32_5">Safety concerns (especially at night)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="No challenges" id="q32_6"><label for="q32_6">No challenges</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q32" value="Other" id="q32_7"><label for="q32_7">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q32">Please select at least one option</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 9: Technology Usage -->
+            <div class="section" data-section="9">
+                <h2 class="section-title">Technology Usage</h2>
+                <p class="section-description">How you use technology</p>
+
+                <div class="question">
+                    <label class="question-label">33. What type of phone do you primarily use?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q33" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q33" value="Android smartphone" id="q33_1"><label for="q33_1">Android smartphone</label></div>
+                        <div class="radio-option"><input type="radio" name="q33" value="iPhone" id="q33_2"><label for="q33_2">iPhone</label></div>
+                        <div class="radio-option"><input type="radio" name="q33" value="Basic phone (not smartphone)" id="q33_3"><label for="q33_3">Basic phone (not smartphone)</label></div>
+                        <div class="radio-option"><input type="radio" name="q33" value="I don't have a phone" id="q33_4"><label for="q33_4">I don't have a phone</label></div>
+                    </div>
+                    <div class="error-message" id="error-q33">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">34. How reliable is your internet connection?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q34" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q34" value="Very reliable (always connected)" id="q34_1"><label for="q34_1">Very reliable (always connected)</label></div>
+                        <div class="radio-option"><input type="radio" name="q34" value="Mostly reliable (occasional issues)" id="q34_2"><label for="q34_2">Mostly reliable (occasional issues)</label></div>
+                        <div class="radio-option"><input type="radio" name="q34" value="Somewhat unreliable (frequent issues)" id="q34_3"><label for="q34_3">Somewhat unreliable (frequent issues)</label></div>
+                        <div class="radio-option"><input type="radio" name="q34" value="Very unreliable (often no connection)" id="q34_4"><label for="q34_4">Very unreliable (often no connection)</label></div>
+                    </div>
+                    <div class="error-message" id="error-q34">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">35. How much do you spend monthly on data?<span class="required">*</span></label>
+                    <div class="radio-group" data-question="q35" data-required="true">
+                        <div class="radio-option"><input type="radio" name="q35" value="Below ₦1,000" id="q35_1"><label for="q35_1">Below ₦1,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q35" value="₦1,000 - ₦2,000" id="q35_2"><label for="q35_2">₦1,000 - ₦2,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q35" value="₦2,000 - ₦5,000" id="q35_3"><label for="q35_3">₦2,000 - ₦5,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q35" value="₦5,000 - ₦10,000" id="q35_4"><label for="q35_4">₦5,000 - ₦10,000</label></div>
+                        <div class="radio-option"><input type="radio" name="q35" value="Above ₦10,000" id="q35_5"><label for="q35_5">Above ₦10,000</label></div>
+                    </div>
+                    <div class="error-message" id="error-q35">Please select an option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">36. Which apps do you use most frequently?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q36" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="WhatsApp" id="q36_1"><label for="q36_1">WhatsApp</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Facebook" id="q36_2"><label for="q36_2">Facebook</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Instagram" id="q36_3"><label for="q36_3">Instagram</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Twitter/X" id="q36_4"><label for="q36_4">Twitter/X</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="TikTok" id="q36_5"><label for="q36_5">TikTok</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="YouTube" id="q36_6"><label for="q36_6">YouTube</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Banking apps" id="q36_7"><label for="q36_7">Banking apps</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Ride-hailing (Bolt, Uber, etc.)" id="q36_8"><label for="q36_8">Ride-hailing (Bolt, Uber, etc.)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Food delivery (Jumia Food, Chowdeck, etc.)" id="q36_9"><label for="q36_9">Food delivery (Jumia Food, Chowdeck, etc.)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Shopping (Jumia, Konga, etc.)" id="q36_10"><label for="q36_10">Shopping (Jumia, Konga, etc.)</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q36" value="Other" id="q36_11"><label for="q36_11">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q36">Please select at least one option</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label">37. What makes you stop using an app?<span class="required">*</span></label>
+                    <div class="checkbox-group" data-question="q37" data-required="true">
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Uses too much data" id="q37_1"><label for="q37_1">Uses too much data</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Too slow / crashes often" id="q37_2"><label for="q37_2">Too slow / crashes often</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Difficult to understand/use" id="q37_3"><label for="q37_3">Difficult to understand/use</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Too many ads" id="q37_4"><label for="q37_4">Too many ads</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Requires too much personal information" id="q37_5"><label for="q37_5">Requires too much personal information</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Not useful enough" id="q37_6"><label for="q37_6">Not useful enough</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Costs money" id="q37_7"><label for="q37_7">Costs money</label></div>
+                        <div class="checkbox-option"><input type="checkbox" name="q37" value="Other" id="q37_8"><label for="q37_8">Other</label></div>
+                    </div>
+                    <div class="error-message" id="error-q37">Please select at least one option</div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Next</button>
+                </div>
+            </div>
+
+            <!-- Section 10: Your Ideas -->
+            <div class="section" data-section="10">
+                <h2 class="section-title">Your Ideas</h2>
+                <p class="section-description">The most important section - your thoughts!</p>
+
+                <div class="question">
+                    <label class="question-label" for="q38">38. If you could wave a magic wand and solve ONE problem in Nigeria using technology, what would it be?<span class="required">*</span>
+                        <span class="hint">Think big!</span>
+                    </label>
+                    <textarea id="q38" name="q38" data-required="true" placeholder="Describe your big idea..."></textarea>
+                    <div class="error-message" id="error-q38">Please answer this question</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q39">39. What problem do you face that you would DEFINITELY pay money to solve?<span class="required">*</span>
+                        <span class="hint">Be specific about the problem and how much you'd pay</span>
+                    </label>
+                    <textarea id="q39" name="q39" data-required="true" placeholder="Describe the problem and how much you'd pay..."></textarea>
+                    <div class="error-message" id="error-q39">Please answer this question</div>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q40">40. Is there any service or product from other countries that you wish existed in Nigeria?<span class="optional">(Optional)</span></label>
+                    <textarea id="q40" name="q40" data-required="false" placeholder="Tell us about it..."></textarea>
+                </div>
+
+                <div class="question">
+                    <label class="question-label" for="q41">41. Any other thoughts, frustrations, or ideas you'd like to share?<span class="optional">(Optional)</span></label>
+                    <textarea id="q41" name="q41" data-required="false" placeholder="Share anything else on your mind..."></textarea>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousSection()">Previous</button>
+                    <button class="btn btn-primary" id="submitBtn" onclick="submitSurvey()">Submit Survey</button>
+                </div>
+            </div>
+
+            <!-- Thank You Message -->
+            <div class="thank-you" id="thankYou">
+                <div class="emoji">🙏</div>
+                <h2>Thank you so much for completing this survey!</h2>
+                <p>Your responses are incredibly valuable and will help shape solutions that could make life easier for Nigerians.</p>
+                <p>If you know others who might want to share their experiences, please feel free to share this survey with them.</p>
+                <p><strong>God bless! 🇳🇬</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="container admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <h2>Admin Panel - Survey Responses</h2>
+            <p>Local responses shown below. For ALL responses from everyone, view Google Sheets:</p>
+            <a href="https://docs.google.com/spreadsheets/d/1TzF7U4o70HfABCO8pmPAaCpCQDvp4p3MjfZgEKFqF60/edit?gid=0#gid=0" target="_blank" class="btn btn-sheets">
+                📊 Open Google Sheets (All Responses)
+            </a>
+            <div class="admin-stats">
+                <div class="stat-box">
+                    <div class="number" id="totalResponses">0</div>
+                    <div class="label">Local Responses</div>
+                </div>
+                <div class="stat-box">
+                    <div class="number" id="lastSubmission">Never</div>
+                    <div class="label">Last Submission</div>
+                </div>
+            </div>
+        </div>
+        <div class="admin-controls">
+            <button class="btn btn-primary" onclick="exportToCSV()">Export Local to CSV</button>
+            <button class="btn btn-danger" onclick="clearAllData()">Clear Local Data</button>
+            <button class="btn btn-secondary" onclick="location.href=location.pathname">Back to Survey</button>
+        </div>
+        <div class="admin-content" id="adminContent">
+            <div class="no-responses">No local responses yet. Check Google Sheets for all responses.</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GOOGLE SHEETS CONFIGURATION
+        // ============================================
+        // IMPORTANT: Replace this with your deployed Google Apps Script web app URL
+        // The URL should end with /exec (NOT /edit)
+        // Get this URL after deploying your Apps Script as a web app
+        const GOOGLE_SCRIPT_URL = 'REPLACE_WITH_YOUR_DEPLOYED_APPS_SCRIPT_URL';
+
+        // Note: The URL you provided is the editor URL. You need to:
+        // 1. Go to your Apps Script project
+        // 2. Click "Deploy" → "New deployment"
+        // 3. Choose "Web app"
+        // 4. Copy the URL that ends with /exec
+        // 5. Paste it above
+
+        // ============================================
+        // SURVEY STATE
+        // ============================================
+        let currentSection = 1;
+        const totalSections = 10;
+        let surveyData = {};
+
+        // Check if we're in admin mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'true') {
+            document.getElementById('surveyContainer').style.display = 'none';
+            document.getElementById('adminPanel').classList.add('show');
+            loadAdminPanel();
+        }
+
+        // ============================================
+        // UI EVENT LISTENERS
+        // ============================================
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('input[type="radio"]');
+                input.checked = true;
+
+                this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.checkbox-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    const input = this.querySelector('input[type="checkbox"]');
+                    input.checked = !input.checked;
+                }
+
+                if (this.querySelector('input[type="checkbox"]').checked) {
+                    this.classList.add('selected');
+                } else {
+                    this.classList.remove('selected');
+                }
+            });
+        });
+
+        // ============================================
+        // NAVIGATION FUNCTIONS
+        // ============================================
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Section ${currentSection} of ${totalSections}`;
+        }
+
+        function validateSection() {
+            const currentSectionEl = document.querySelector(`.section[data-section="${currentSection}"]`);
+            let isValid = true;
+
+            currentSectionEl.querySelectorAll('input[type="text"][data-required="true"], textarea[data-required="true"]').forEach(input => {
+                const errorEl = document.getElementById(`error-${input.name}`);
+                if (input.value.trim() === '') {
+                    errorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    errorEl.classList.remove('show');
+                }
+            });
+
+            currentSectionEl.querySelectorAll('.radio-group[data-required="true"]').forEach(group => {
+                const questionName = group.getAttribute('data-question');
+                const errorEl = document.getElementById(`error-${questionName}`);
+                const checked = group.querySelector('input[type="radio"]:checked');
+
+                if (!checked) {
+                    errorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    errorEl.classList.remove('show');
+                }
+            });
+
+            currentSectionEl.querySelectorAll('.checkbox-group[data-required="true"]').forEach(group => {
+                const questionName = group.getAttribute('data-question');
+                const errorEl = document.getElementById(`error-${questionName}`);
+                const checked = group.querySelectorAll('input[type="checkbox"]:checked');
+
+                if (checked.length === 0) {
+                    errorEl.classList.add('show');
+                    isValid = false;
+                } else {
+                    errorEl.classList.remove('show');
+                }
+            });
+
+            return isValid;
+        }
+
+        function saveCurrentSection() {
+            const currentSectionEl = document.querySelector(`.section[data-section="${currentSection}"]`);
+
+            currentSectionEl.querySelectorAll('input[type="text"], textarea').forEach(input => {
+                surveyData[input.name] = input.value;
+            });
+
+            currentSectionEl.querySelectorAll('input[type="radio"]:checked').forEach(input => {
+                surveyData[input.name] = input.value;
+            });
+
+            const checkboxGroups = {};
+            currentSectionEl.querySelectorAll('input[type="checkbox"]:checked').forEach(input => {
+                if (!checkboxGroups[input.name]) {
+                    checkboxGroups[input.name] = [];
+                }
+                checkboxGroups[input.name].push(input.value);
+            });
+            Object.assign(surveyData, checkboxGroups);
+        }
+
+        function nextSection() {
+            if (!validateSection()) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            saveCurrentSection();
+
+            if (currentSection < totalSections) {
+                document.querySelector(`.section[data-section="${currentSection}"]`).classList.remove('active');
+                currentSection++;
+                document.querySelector(`.section[data-section="${currentSection}"]`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function previousSection() {
+            if (currentSection > 1) {
+                saveCurrentSection();
+                document.querySelector(`.section[data-section="${currentSection}"]`).classList.remove('active');
+                currentSection--;
+                document.querySelector(`.section[data-section="${currentSection}"]`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        // ============================================
+        // DATA COLLECTION FUNCTIONS
+        // ============================================
+        function collectAllFormData() {
+            // Map question IDs to Google Sheets column names
+            return {
+                // Section 1: Demographics
+                age: surveyData.q1 || '',
+                gender: surveyData.q2 || '',
+                state: surveyData.q3 || '',
+                areaType: surveyData.q4 || '',
+                employment: surveyData.q5 || '',
+                occupation: surveyData.q6 || '',
+                income: surveyData.q7 || '',
+
+                // Section 2: Frustrations
+                topFrustrations: surveyData.q8 || '',
+                timeTooMuch: surveyData.q9 || '',
+                wishPhone: surveyData.q10 || '',
+                whyNoApp: surveyData.q11 || '',
+
+                // Section 3: Healthcare
+                findDoctors: surveyData.q12 || '',
+                healthcareChallenges: surveyData.q13 || [],
+                medicalRecords: surveyData.q14 || '',
+                telemedicine: surveyData.q15 || '',
+
+                // Section 4: Finance
+                financialChallenges: surveyData.q16 || [],
+                trackExpenses: surveyData.q17 || '',
+                ajoParticipation: surveyData.q18 || '',
+                ajoChallenges: surveyData.q19 || [],
+                payForFinanceApp: surveyData.q20 || '',
+
+                // Section 5: Services
+                businessChallenge: surveyData.q21 || '',
+                findArtisans: surveyData.q22 || '',
+                artisanProblems: surveyData.q23 || [],
+                useArtisanApp: surveyData.q24 || '',
+
+                // Section 6: Education
+                studentOrParent: surveyData.q25 || '',
+                educationChallenges: surveyData.q26 || [],
+
+                // Section 7: Government
+                govServicesFrustrating: surveyData.q27 || [],
+                govServicesWhy: surveyData.q28 || '',
+
+                // Section 8: Infrastructure
+                powerOutages: surveyData.q29 || '',
+                powerApp: surveyData.q30 || '',
+                fuelInfo: surveyData.q31 || '',
+                transportChallenges: surveyData.q32 || [],
+
+                // Section 9: Technology
+                phoneType: surveyData.q33 || '',
+                internetReliability: surveyData.q34 || '',
+                dataSpend: surveyData.q35 || '',
+                appsUsed: surveyData.q36 || [],
+                stopUsingApp: surveyData.q37 || [],
+
+                // Section 10: Ideas
+                magicWandProblem: surveyData.q38 || '',
+                payToSolve: surveyData.q39 || '',
+                wishExisted: surveyData.q40 || '',
+                otherThoughts: surveyData.q41 || ''
+            };
+        }
+
+        // ============================================
+        // GOOGLE SHEETS SUBMISSION
+        // ============================================
+        async function submitToGoogleSheets(formData) {
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                // Note: 'no-cors' mode doesn't return response body
+                // We assume success if no error is thrown
+                return { success: true };
+
+            } catch (error) {
+                console.error('Error submitting to Google Sheets:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        // ============================================
+        // SUBMIT SURVEY
+        // ============================================
+        async function submitSurvey() {
+            if (!validateSection()) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return;
+            }
+
+            saveCurrentSection();
+
+            // Add metadata
+            surveyData.submittedAt = new Date().toISOString();
+            surveyData.id = 'RESP-' + Date.now();
+
+            // Show loading state
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+
+            // Collect all form data in Google Sheets format
+            const formData = collectAllFormData();
+
+            // Save to localStorage as backup
+            let responses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
+            responses.push({ ...surveyData, ...formData });
+            localStorage.setItem('surveyResponses', JSON.stringify(responses));
+
+            // Submit to Google Sheets
+            if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'REPLACE_WITH_YOUR_DEPLOYED_APPS_SCRIPT_URL') {
+                const result = await submitToGoogleSheets(formData);
+
+                if (!result.success) {
+                    console.log('Note: Response saved locally. Check your internet connection or Google Sheets configuration.');
+                }
+            } else {
+                console.log('Note: Google Sheets URL not configured. Response saved locally only.');
+            }
+
+            // Reset button
+            submitBtn.textContent = originalText;
+            submitBtn.disabled = false;
+
+            // Show thank you message
+            document.querySelector('.content').innerHTML = '';
+            document.getElementById('thankYou').classList.add('show');
+            document.querySelector('.progress-container').style.display = 'none';
+        }
+
+        // ============================================
+        // ADMIN PANEL FUNCTIONS
+        // ============================================
+        function loadAdminPanel() {
+            const responses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
+            document.getElementById('totalResponses').textContent = responses.length;
+
+            if (responses.length > 0) {
+                const lastResponse = responses[responses.length - 1];
+                const lastDate = new Date(lastResponse.submittedAt);
+                document.getElementById('lastSubmission').textContent = lastDate.toLocaleDateString() + ' ' + lastDate.toLocaleTimeString();
+
+                const content = document.getElementById('adminContent');
+                content.innerHTML = '';
+
+                responses.reverse().forEach(response => {
+                    const card = document.createElement('div');
+                    card.className = 'response-card';
+
+                    const date = new Date(response.submittedAt);
+                    let html = `
+                        <div class="response-header">
+                            <span class="response-id">${response.id}</span>
+                            <span class="response-date">${date.toLocaleDateString()} ${date.toLocaleTimeString()}</span>
+                        </div>
+                        <div class="response-data">
+                    `;
+
+                    const questionLabels = {
+                        q1: '1. Age range', q2: '2. Gender', q3: '3. State', q4: '4. Area type',
+                        q5: '5. Employment status', q6: '6. Occupation', q7: '7. Monthly income',
+                        q8: '8. Top 3 frustrations', q9: '9. Time-consuming task', q10: '10. Wish from phone',
+                        q11: '11. Why no app for this', q12: '12. Finding doctors', q13: '13. Healthcare challenges',
+                        q14: '14. Medical records tracking', q15: '15. Telemedicine', q16: '16. Financial challenges',
+                        q17: '17. Expense tracking', q18: '18. Ajo/esusu participation', q19: '19. Ajo/esusu challenges',
+                        q20: '20. Finance app pricing', q21: '21. Business challenge', q22: '22. Finding service providers',
+                        q23: '23. Artisan problems', q24: '24. Verified artisan app', q25: '25. Education status',
+                        q26: '26. Education challenges', q27: '27. Frustrating govt services', q28: '28. What makes govt services frustrating',
+                        q29: '29. Power outage frequency', q30: '30. Power outage tracker app', q31: '31. Fuel info finding',
+                        q32: '32. Transportation challenges', q33: '33. Phone type', q34: '34. Internet reliability',
+                        q35: '35. Monthly data spend', q36: '36. Most used apps', q37: '37. Why stop using apps',
+                        q38: '38. Magic wand problem', q39: '39. Problem worth paying for', q40: '40. Service from other countries',
+                        q41: '41. Other thoughts'
+                    };
+
+                    for (let key in response) {
+                        if (key !== 'submittedAt' && key !== 'id' && questionLabels[key]) {
+                            let value = response[key];
+                            if (Array.isArray(value)) {
+                                value = value.join(', ');
+                            }
+                            if (value) {
+                                html += `<strong>${questionLabels[key]}:</strong><p>${value}</p>`;
+                            }
+                        }
+                    }
+
+                    html += '</div>';
+                    card.innerHTML = html;
+                    content.appendChild(card);
+                });
+            }
+        }
+
+        function exportToCSV() {
+            const responses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
+
+            if (responses.length === 0) {
+                alert('No responses to export');
+                return;
+            }
+
+            const allKeys = new Set();
+            responses.forEach(response => {
+                Object.keys(response).forEach(key => allKeys.add(key));
+            });
+
+            const headers = Array.from(allKeys);
+            let csv = headers.map(h => `"${h}"`).join(',') + '\n';
+
+            responses.forEach(response => {
+                const row = headers.map(header => {
+                    let value = response[header] || '';
+                    if (Array.isArray(value)) {
+                        value = value.join('; ');
+                    }
+                    value = String(value).replace(/"/g, '""');
+                    return `"${value}"`;
+                });
+                csv += row.join(',') + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', `nigerian_survey_local_responses_${Date.now()}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAllData() {
+            if (confirm('Are you sure you want to delete ALL local survey responses? This will not affect Google Sheets data.')) {
+                if (confirm('Really sure? This will permanently delete local data!')) {
+                    localStorage.removeItem('surveyResponses');
+                    location.reload();
+                }
+            }
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
