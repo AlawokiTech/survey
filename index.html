@@ -1073,7 +1073,7 @@
         <div class="admin-controls">
             <button class="btn btn-primary" onclick="exportToCSV()">Export Local to CSV</button>
             <button class="btn btn-danger" onclick="clearAllData()">Clear Local Data</button>
-            <button class="btn btn-secondary" onclick="goToSurvey()">Back to Survey</button>
+            <button class="btn btn-secondary" onclick="location.href=location.pathname">Back to Survey</button>
         </div>
         <div class="admin-content" id="adminContent">
             <div class="no-responses">No local responses yet. Check Google Sheets for all responses.</div>
@@ -1085,7 +1085,7 @@
         // GOOGLE SHEETS CONFIGURATION
         // ============================================
         // Deployed Google Apps Script web app URL - responses are sent here
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzo1tASclZwGlK3DoBoy1d-ozCnLIXIlpnyriy_I70ZItvKgJfYLY2waQS4IISqYThA/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-v60_BttB4R3qEwSR8HoDFD-3HEA6L6sjl5PomM1DDF-KqbHazwSE1C6QeTjHuw-h/exec';
 
         // ============================================
         // SURVEY STATE
@@ -1094,89 +1094,44 @@
         const totalSections = 10;
         let surveyData = {};
 
-        // ============================================
-        // FIX: Handle URL consistency for localStorage
-        // ============================================
-        const currentUrl = window.location.href;
-
-        // If accessing with ?admin=true, redirect to clean URL with #admin
-        if (currentUrl.includes('?admin=true')) {
-            // Remove query parameter and add hash
-            const cleanUrl = currentUrl.split('?')[0] + '#admin';
-            window.location.href = cleanUrl;
-            // Stop execution - page will reload
-            throw new Error('Redirecting...');
-        }
-
-        // ============================================
-        // Check admin mode on page load
-        // ============================================
-        window.addEventListener('DOMContentLoaded', function() {
-            // Check for admin mode using hash (#admin) OR query parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            const hasAdminQuery = urlParams.get('admin') === 'true';
-            const hasAdminHash = window.location.hash === '#admin';
-            
-            if (hasAdminQuery || hasAdminHash) {
-                // Clean up URL if it has query parameter
-                if (hasAdminQuery) {
-                    window.history.replaceState({}, '', window.location.pathname + '#admin');
-                }
-                
-                // Show admin panel
-                showAdminPanel();
-            }
-            
-            // Setup event listeners
-            setupEventListeners();
-            updateProgress();
-        });
-
-        // ============================================
-        // ADMIN PANEL FUNCTIONS
-        // ============================================
-        function showAdminPanel() {
+        // Check if we're in admin mode
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('admin') === 'true') {
             document.getElementById('surveyContainer').style.display = 'none';
             document.getElementById('adminPanel').classList.add('show');
             loadAdminPanel();
         }
 
         // ============================================
-        // NAVIGATION BETWEEN SURVEY AND ADMIN
+        // UI EVENT LISTENERS
         // ============================================
-        function goToSurvey() {
-            // Remove hash and reload
-            window.location.hash = '';
-            location.reload();
-        }
+        document.querySelectorAll('.radio-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const input = this.querySelector('input[type="radio"]');
+                input.checked = true;
 
-        // ============================================
-        // UI EVENT LISTENERS SETUP
-        // ============================================
-        function setupEventListeners() {
-            // Radio button selection
-            document.querySelectorAll('.radio-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const input = this.querySelector('input[type="radio"]');
-                    input.checked = true;
-                    this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
-                        opt.classList.remove('selected');
-                    });
+                this.parentElement.querySelectorAll('.radio-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+
+                this.classList.add('selected');
+            });
+        });
+
+        document.querySelectorAll('.checkbox-option').forEach(option => {
+            option.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') {
+                    const input = this.querySelector('input[type="checkbox"]');
+                    input.checked = !input.checked;
+                }
+
+                if (this.querySelector('input[type="checkbox"]').checked) {
                     this.classList.add('selected');
-                });
+                } else {
+                    this.classList.remove('selected');
+                }
             });
-
-            // Checkbox selection
-            document.querySelectorAll('.checkbox-option').forEach(option => {
-                option.addEventListener('click', function(e) {
-                    if (e.target.tagName !== 'INPUT') {
-                        const input = this.querySelector('input[type="checkbox"]');
-                        input.checked = !input.checked;
-                    }
-                    this.classList.toggle('selected', this.querySelector('input[type="checkbox"]').checked);
-                });
-            });
-        }
+        });
 
         // ============================================
         // NAVIGATION FUNCTIONS
@@ -1349,67 +1304,26 @@
         }
 
         // ============================================
-        // GOOGLE SHEETS SUBMISSION (IMPROVED)
+        // GOOGLE SHEETS SUBMISSION
         // ============================================
         async function submitToGoogleSheets(formData) {
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('REPLACE')) {
-                console.log('Google Sheets URL not configured');
-                return { success: false, error: 'URL not configured' };
-            }
-
             try {
-                console.log('Submitting to Google Sheets:', formData);
-                
-                // Add timestamp and ID
-                const dataToSend = {
-                    ...formData,
-                    submittedAt: new Date().toISOString(),
-                    id: 'RESP-' + Date.now()
-                };
-                
-                // Convert arrays to strings for Google Sheets
-                Object.keys(dataToSend).forEach(key => {
-                    if (Array.isArray(dataToSend[key])) {
-                        dataToSend[key] = dataToSend[key].join(', ');
-                    }
-                });
-                
-                // Submit with timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 10000);
-                
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'cors',
-                    signal: controller.signal,
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(dataToSend)
+                    body: JSON.stringify(formData)
                 });
-                
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                console.log('Google Sheets response:', result);
-                
-                if (result.success) {
-                    return { success: true };
-                } else {
-                    return { success: false, error: result.error };
-                }
-                
+
+                // Note: 'no-cors' mode doesn't return response body
+                // We assume success if no error is thrown
+                return { success: true };
+
             } catch (error) {
-                console.error('Google Sheets submission error:', error);
-                return { 
-                    success: false, 
-                    error: error.message,
-                    details: 'Make sure Google Apps Script is deployed correctly'
-                };
+                console.error('Error submitting to Google Sheets:', error);
+                return { success: false, error: error.message };
             }
         }
 
@@ -1441,81 +1355,26 @@
             let responses = JSON.parse(localStorage.getItem('surveyResponses') || '[]');
             responses.push({ ...surveyData, ...formData });
             localStorage.setItem('surveyResponses', JSON.stringify(responses));
-            console.log('✅ Saved to localStorage');
 
             // Submit to Google Sheets
             if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL !== 'REPLACE_WITH_YOUR_DEPLOYED_APPS_SCRIPT_URL') {
                 const result = await submitToGoogleSheets(formData);
 
-                if (result.success) {
-                    console.log('✅ Successfully submitted to Google Sheets');
-                    // Show success message with Google Sheets link
-                    showThankYouWithSheetsLink();
-                } else {
-                    console.log('⚠️ Google Sheets submission failed:', result.error);
-                    // Show warning but still thank user
-                    showThankYouWithWarning(result.error);
+                if (!result.success) {
+                    console.log('Note: Response saved locally. Check your internet connection or Google Sheets configuration.');
                 }
             } else {
                 console.log('Note: Google Sheets URL not configured. Response saved locally only.');
-                showThankYouMessage();
             }
 
             // Reset button
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
-        }
 
-        // ============================================
-        // THANK YOU MESSAGE FUNCTIONS
-        // ============================================
-        function showThankYouMessage() {
+            // Show thank you message
             document.querySelector('.content').innerHTML = '';
             document.getElementById('thankYou').classList.add('show');
             document.querySelector('.progress-container').style.display = 'none';
-        }
-
-        function showThankYouWithSheetsLink() {
-            document.querySelector('.content').innerHTML = '';
-            document.querySelector('.progress-container').style.display = 'none';
-            
-            const thankYouHTML = `
-                <div class="thank-you show">
-                    <div class="emoji">🎉</div>
-                    <h2>Thank you so much!</h2>
-                    <p>✅ Your response has been successfully submitted to Google Sheets.</p>
-                    <p>To view <strong>ALL responses</strong> from everyone, visit:</p>
-                    <a href="https://docs.google.com/spreadsheets/d/1TzF7U4o70HfABCO8pmPAaCpCQDvp4p3MjfZgEKFqF60/edit" 
-                       target="_blank" class="btn btn-primary" style="margin: 15px 0;">
-                       📊 View All Responses in Google Sheets
-                    </a>
-                    <p>Thank you for helping shape solutions for Nigeria! 🇳🇬</p>
-                    <p><small>(Your response has also been saved locally to this device)</small></p>
-                </div>
-            `;
-            
-            document.querySelector('.content').innerHTML = thankYouHTML;
-        }
-
-        function showThankYouWithWarning(error) {
-            document.querySelector('.content').innerHTML = '';
-            document.querySelector('.progress-container').style.display = 'none';
-            
-            const thankYouHTML = `
-                <div class="thank-you show">
-                    <div class="emoji">🙏</div>
-                    <h2>Thank you so much!</h2>
-                    <p>✅ Your response has been saved locally to this device.</p>
-                    <p>⚠️ <strong>Note:</strong> There was an issue submitting to Google Sheets: ${error}</p>
-                    <p>You can still view responses from this device in the admin panel.</p>
-                    <button class="btn btn-secondary" onclick="goToSurvey()" style="margin: 10px 0;">
-                        Back to Survey
-                    </button>
-                    <p>Thank you for your participation! 🇳🇬</p>
-                </div>
-            `;
-            
-            document.querySelector('.content').innerHTML = thankYouHTML;
         }
 
         // ============================================
